@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { updateMyProfileApi } from "../../api/user.api";
 import { changePasswordApi as changePasswordAuthApi } from "../../api/auth.api";
+import { formatDate } from "../../utils/formatters";
 import Card from "../../components/common/Card";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
@@ -11,12 +12,26 @@ export default function MyProfile() {
   const { user, updateUser } = useAuth();
   const fileRef = useRef();
   const [form, setForm] = useState({ name: user?.name || "", designation: user?.designation || "" });
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "" });
   const [pwMessage, setPwMessage] = useState("");
   const [pwError, setPwError] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -29,6 +44,9 @@ export default function MyProfile() {
       if (fileRef.current.files[0]) fd.append("profilePhoto", fileRef.current.files[0]);
       const data = await updateMyProfileApi(fd);
       updateUser(data.user);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+      fileRef.current.value = "";
       setMessage("Profile updated");
     } finally {
       setSaving(false);
@@ -48,6 +66,8 @@ export default function MyProfile() {
     }
   };
 
+  const photoSrc = previewUrl || user?.profilePhoto;
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <Card title="My Profile">
@@ -55,8 +75,8 @@ export default function MyProfile() {
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-accent-100 text-xl font-semibold text-accent-700">
-                {user?.profilePhoto ? (
-                  <img src={user.profilePhoto} alt={user.name} className="h-full w-full object-cover" />
+                {photoSrc ? (
+                  <img src={photoSrc} alt={user.name} className="h-full w-full object-cover" />
                 ) : (
                   user?.name?.[0]?.toUpperCase()
                 )}
@@ -64,15 +84,18 @@ export default function MyProfile() {
               <button
                 type="button"
                 onClick={() => fileRef.current.click()}
+                title="Change photo"
+                aria-label="Change photo"
                 className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-600 text-white"
               >
                 <Camera size={12} />
               </button>
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" />
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} />
             </div>
             <div>
               <p className="font-medium text-slate-700">{user?.email}</p>
               <p className="text-sm capitalize text-slate-400">{user?.role?.replace("_", " ")}</p>
+              {previewUrl && <p className="text-xs text-accent-600">New photo selected — click "Save changes" to upload</p>}
             </div>
           </div>
 
@@ -94,7 +117,7 @@ export default function MyProfile() {
             </p>
             <p>
               <span className="block text-xs text-slate-400">Joining Date</span>
-              {user?.joiningDate ? new Date(user.joiningDate).toLocaleDateString() : "—"}
+              {user?.joiningDate ? formatDate(user.joiningDate) : "—"}
             </p>
           </div>
 

@@ -24,7 +24,7 @@ export default function TeamDirectory() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-slate-800">Team Directory</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Team Directory</h1>
       <Card>
         {loading ? <p className="text-sm text-slate-400">Loading...</p> : <Table columns={columns} rows={team} />}
       </Card>

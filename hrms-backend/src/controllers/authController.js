@@ -3,6 +3,7 @@ const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/sendEmail");
+const { buildEmailHtml } = require("../utils/emailTemplate");
 const User = require("../models/User");
 
 const login = catchAsync(async (req, res) => {
@@ -51,14 +52,24 @@ const forgotPassword = catchAsync(async (req, res) => {
     try {
       await sendEmail({
         to: user.email,
-        subject: "HRMS Portal — Password Reset",
-        html: `<p>Hi ${user.name},</p><p>Click the link below to reset your password. This link expires in 1 hour.</p><p><a href="${resetUrl}">${resetUrl}</a></p>`,
+        subject: "Reset Your HRMS Password",
+        html: buildEmailHtml({
+          heading: "Reset your password",
+          bodyHtml: `
+            <p>Hi ${user.name},</p>
+            <p>We received a request to reset the password on your Briskcovey HRMS account. Click the button below to choose a new one. This link expires in <strong>1 hour</strong>.</p>
+            <p>If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
+          `,
+          ctaText: "Reset Password",
+          ctaUrl: resetUrl,
+        }),
       });
     } catch (err) {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save({ validateBeforeSave: false });
-      throw new ApiError(500, "Failed to send reset email");
+      console.error("Failed to send reset email:", err.message);
+      throw new ApiError(500, "Failed to send reset email — check backend SMTP configuration");
     }
   }
 

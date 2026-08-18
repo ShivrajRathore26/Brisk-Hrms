@@ -1,8 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/User");
-const LeaveBalance = require("../models/LeaveBalance");
-const CompanySettings = require("../models/CompanySettings");
 
 const getUsers = catchAsync(async (req, res) => {
   const { search, department, role, status } = req.query;
@@ -39,31 +37,23 @@ const getUserById = catchAsync(async (req, res) => {
 
 const createUser = catchAsync(async (req, res) => {
   const { name, email, password, role, department, designation, manager, joiningDate } = req.body;
+  if (!password || password.length < 6) {
+    throw new ApiError(400, "A password of at least 6 characters is required");
+  }
+
   const exists = await User.findOne({ email: email.toLowerCase() });
   if (exists) throw new ApiError(400, "A user with this email already exists");
 
   const user = await User.create({
     name,
     email,
-    password: password || Math.random().toString(36).slice(-10),
+    password,
     role,
     department: department || undefined,
     designation,
     manager: manager || undefined,
     joiningDate,
   });
-
-  const year = new Date().getFullYear();
-  const settings = (await CompanySettings.findOne()) || { leavePolicy: { sick: 12, casual: 12, earned: 15 } };
-  await LeaveBalance.insertMany(
-    ["sick", "casual", "earned"].map((leaveType) => ({
-      user: user._id,
-      leaveType,
-      total: settings.leavePolicy[leaveType],
-      used: 0,
-      year,
-    }))
-  );
 
   res.status(201).json({ success: true, user });
 });
@@ -82,6 +72,7 @@ const updateUser = catchAsync(async (req, res) => {
   if (joiningDate !== undefined) user.joiningDate = joiningDate;
 
   await user.save();
+  await user.populate([{ path: "department", select: "name" }, { path: "manager", select: "name" }]);
   res.json({ success: true, user });
 });
 
@@ -92,6 +83,7 @@ const updateMyProfile = catchAsync(async (req, res) => {
   if (designation !== undefined) user.designation = designation;
   if (req.file) user.profilePhoto = req.file.path;
   await user.save();
+  await user.populate([{ path: "department", select: "name" }, { path: "manager", select: "name" }]);
   res.json({ success: true, user });
 });
 

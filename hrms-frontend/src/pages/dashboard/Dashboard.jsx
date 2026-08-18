@@ -1,4 +1,5 @@
 import { useAuth } from "../../context/AuthContext";
+import { formatDate } from "../../utils/formatters";
 import PunchCard from "../../components/dashboard/PunchCard";
 import ProfileCard from "../../components/dashboard/ProfileCard";
 import LeaveBalanceWidget from "../../components/dashboard/LeaveBalanceWidget";
@@ -13,8 +14,13 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">Welcome back, {user?.name?.split(" ")[0]}</h1>
-        <p className="text-sm text-slate-400">Here's what's happening today.</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+          Welcome back, {user?.name?.split(" ")[0]}
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          {formatDate(new Date(), { weekday: "long", month: "long", day: "numeric" })} — here's
+          what's happening today.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

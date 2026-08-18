@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ClipboardCheck } from "lucide-react";
 import { getPendingApprovalsApi } from "../../api/leave.api";
+import { formatDate } from "../../utils/formatters";
 import Card from "../common/Card";
 
 export default function PendingApprovalsWidget() {
@@ -28,8 +29,7 @@ export default function PendingApprovalsWidget() {
             <li key={l._id} className="flex items-center gap-3 text-sm">
               <ClipboardCheck size={16} className="text-amber-500" />
               <span className="text-slate-600">
-                {l.user?.name} · {l.leaveType} · {new Date(l.fromDate).toLocaleDateString()} -{" "}
-                {new Date(l.toDate).toLocaleDateString()}
+                {l.user?.name} · {formatDate(l.fromDate)} - {formatDate(l.toDate)}
               </span>
             </li>
           ))}

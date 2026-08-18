@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Lock, Mail } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import AuthLayout from "../../components/layout/AuthLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import Logo from "../../components/common/Logo";
@@ -27,19 +29,24 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-card bg-white p-8 shadow-sm">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <Logo size="lg" className="mb-4 flex-col text-center" />
-          <h1 className="text-xl font-semibold text-slate-800">Sign in to HRMS</h1>
-          <p className="mt-1 text-sm text-slate-400">Enter your credentials to continue</p>
+    <AuthLayout>
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex justify-center lg:hidden">
+          <Logo size="lg" />
+        </div>
+
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-slate-500">Sign in to your HRMS account to continue.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Email"
             type="email"
+            icon={Mail}
             required
+            autoComplete="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="you@company.com"
@@ -47,23 +54,31 @@ export default function Login() {
           <Input
             label="Password"
             type="password"
+            icon={Lock}
             required
+            autoComplete="current-password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             placeholder="••••••••"
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          {error && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
+
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
 
         <div className="mt-5 text-center">
-          <Link to="/forgot-password" className="text-sm text-accent-600 hover:underline">
+          <Link to="/forgot-password" className="text-sm font-medium text-accent-600 hover:text-accent-700 hover:underline">
             Forgot password?
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

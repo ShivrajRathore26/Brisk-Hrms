@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUpcomingHolidaysApi } from "../../api/holiday.api";
+import { formatDate } from "../../utils/formatters";
 import Card from "../common/Card";
 
 export default function UpcomingHoliday() {
@@ -19,7 +20,7 @@ export default function UpcomingHoliday() {
             <li key={h._id} className="flex items-center justify-between text-sm">
               <span className="text-slate-600">{h.name}</span>
               <span className="text-slate-400">
-                {new Date(h.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                {formatDate(h.date, { month: "short", day: "numeric" })}
               </span>
             </li>
           ))}

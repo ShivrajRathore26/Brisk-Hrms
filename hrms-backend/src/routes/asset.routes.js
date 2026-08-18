@@ -5,6 +5,7 @@ const {
   getAssets,
   createAsset,
   updateAsset,
+  deleteAsset,
   assignAsset,
   returnAsset,
   getMyAssets,
@@ -19,6 +20,7 @@ router.get("/mine", getMyAssets);
 router.get("/", restrictTo("hr", "super_admin"), getAssets);
 router.post("/", restrictTo("hr", "super_admin"), createAsset);
 router.put("/:id", restrictTo("hr", "super_admin"), updateAsset);
+router.delete("/:id", restrictTo("hr", "super_admin"), deleteAsset);
 router.post("/assign", restrictTo("hr", "super_admin"), assignAsset);
 router.post("/return", restrictTo("hr", "super_admin"), returnAsset);
 router.get("/history/:userId", restrictTo("hr", "super_admin"), getAssetHistory);

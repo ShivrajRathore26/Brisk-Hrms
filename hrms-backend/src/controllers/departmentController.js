@@ -1,6 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 const Department = require("../models/Department");
+const User = require("../models/User");
 
 const getDepartments = catchAsync(async (req, res) => {
   const departments = await Department.find().sort({ name: 1 });
@@ -26,8 +27,13 @@ const updateDepartment = catchAsync(async (req, res) => {
 });
 
 const deleteDepartment = catchAsync(async (req, res) => {
-  const department = await Department.findByIdAndDelete(req.params.id);
+  const department = await Department.findById(req.params.id);
   if (!department) throw new ApiError(404, "Department not found");
+  const employeeCount = await User.countDocuments({ department: req.params.id });
+  if (employeeCount > 0) {
+    throw new ApiError(400, `This department still has ${employeeCount} employee(s) assigned — reassign them before deleting`);
+  }
+  await Department.findByIdAndDelete(req.params.id);
   res.json({ success: true, message: "Department deleted" });
 });
 

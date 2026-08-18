@@ -33,17 +33,43 @@ const getAssets = catchAsync(async (req, res) => {
 });
 
 const createAsset = catchAsync(async (req, res) => {
-  const { assetType, modelName, serialNumber } = req.body;
-  const exists = await Asset.findOne({ serialNumber });
-  if (exists) throw new ApiError(400, "An asset with this serial number already exists");
-  const asset = await Asset.create({ assetType, modelName, serialNumber });
+  const { assetType, modelName, serialNumber, description } = req.body;
+  if (!modelName && !description) {
+    throw new ApiError(400, "Provide a model name or a description for this asset");
+  }
+  if (serialNumber) {
+    const exists = await Asset.findOne({ serialNumber });
+    if (exists) throw new ApiError(400, "An asset with this serial number already exists");
+  }
+  const asset = await Asset.create({
+    assetType,
+    modelName: modelName || "",
+    serialNumber: serialNumber || undefined,
+    description: description || "",
+  });
   res.status(201).json({ success: true, asset });
 });
 
 const updateAsset = catchAsync(async (req, res) => {
+  const { serialNumber } = req.body;
+  if (serialNumber) {
+    const exists = await Asset.findOne({ serialNumber, _id: { $ne: req.params.id } });
+    if (exists) throw new ApiError(400, "An asset with this serial number already exists");
+  }
   const asset = await Asset.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
   if (!asset) throw new ApiError(404, "Asset not found");
   res.json({ success: true, asset });
+});
+
+const deleteAsset = catchAsync(async (req, res) => {
+  const asset = await Asset.findById(req.params.id);
+  if (!asset) throw new ApiError(404, "Asset not found");
+  if (asset.status === "assigned") {
+    throw new ApiError(400, "This asset is currently assigned — return it before deleting");
+  }
+  await Asset.findByIdAndDelete(req.params.id);
+  await AssetAssignment.deleteMany({ asset: req.params.id });
+  res.json({ success: true, message: "Asset deleted" });
 });
 
 const assignAsset = catchAsync(async (req, res) => {
@@ -103,6 +129,7 @@ module.exports = {
   getAssets,
   createAsset,
   updateAsset,
+  deleteAsset,
   assignAsset,
   returnAsset,
   getMyAssets,

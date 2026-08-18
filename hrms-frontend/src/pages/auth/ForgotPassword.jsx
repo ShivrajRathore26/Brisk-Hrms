@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, CheckCircle2, Mail } from "lucide-react";
 import { forgotPasswordApi } from "../../api/auth.api";
+import AuthLayout from "../../components/layout/AuthLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import Logo from "../../components/common/Logo";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -25,40 +28,61 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-card bg-white p-8 shadow-sm">
-        <h1 className="mb-2 text-xl font-semibold text-slate-800">Reset your password</h1>
-        <p className="mb-6 text-sm text-slate-400">
-          Enter your email and we'll send you a reset link.
-        </p>
+    <AuthLayout>
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex justify-center lg:hidden">
+          <Logo size="lg" />
+        </div>
 
         {sent ? (
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
-            If that email exists, a reset link has been sent. Check your inbox.
-          </p>
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
+              <CheckCircle2 size={24} className="text-emerald-600" />
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Check your inbox</h1>
+            <p className="mt-2 text-sm text-slate-500">
+              If <span className="font-medium text-slate-700">{email}</span> is registered, we've sent a link to
+              reset your password.
+            </p>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Sending..." : "Send reset link"}
-            </Button>
-          </form>
+          <>
+            <div className="mb-8">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Reset your password</h1>
+              <p className="mt-1.5 text-sm text-slate-500">Enter your email and we'll send you a reset link.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="Email"
+                type="email"
+                icon={Mail}
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+              />
+              {error && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? "Sending..." : "Send reset link"}
+              </Button>
+            </form>
+          </>
         )}
 
-        <div className="mt-5 text-center">
-          <Link to="/login" className="text-sm text-accent-600 hover:underline">
-            Back to sign in
+        <div className="mt-6 text-center">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-700"
+          >
+            <ArrowLeft size={14} /> Back to sign in
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

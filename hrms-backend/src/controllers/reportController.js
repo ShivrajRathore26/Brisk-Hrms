@@ -1,7 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const Attendance = require("../models/Attendance");
 const LeaveRequest = require("../models/LeaveRequest");
-const Payslip = require("../models/Payslip");
 const Asset = require("../models/Asset");
 const User = require("../models/User");
 
@@ -48,25 +47,6 @@ const leaveReport = catchAsync(async (req, res) => {
   res.json({ success: true, summary, records });
 });
 
-const payrollReport = catchAsync(async (req, res) => {
-  const { month, year } = req.query;
-  const filter = {};
-  if (month) filter.month = Number(month);
-  if (year) filter.year = Number(year);
-
-  const payslips = await Payslip.find(filter).populate("user", "name department");
-  const totals = payslips.reduce(
-    (acc, p) => ({
-      grossPay: acc.grossPay + p.grossPay,
-      taxDeducted: acc.taxDeducted + p.taxDeducted,
-      netPay: acc.netPay + p.netPay,
-    }),
-    { grossPay: 0, taxDeducted: 0, netPay: 0 }
-  );
-
-  res.json({ success: true, totals, payslips });
-});
-
 const assetReport = catchAsync(async (req, res) => {
   const assets = await Asset.find();
   const byStatus = assets.reduce((acc, a) => {
@@ -81,4 +61,4 @@ const assetReport = catchAsync(async (req, res) => {
   res.json({ success: true, byStatus, byType, total: assets.length });
 });
 
-module.exports = { attendanceReport, leaveReport, payrollReport, assetReport };
+module.exports = { attendanceReport, leaveReport, assetReport };

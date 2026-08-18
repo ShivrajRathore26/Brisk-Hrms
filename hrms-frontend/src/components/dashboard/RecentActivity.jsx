@@ -1,4 +1,5 @@
 import { useNotifications } from "../../context/NotificationContext";
+import { formatDateTime } from "../../utils/formatters";
 import Card from "../common/Card";
 
 export default function RecentActivity() {
@@ -14,7 +15,7 @@ export default function RecentActivity() {
           {recent.map((n) => (
             <li key={n._id} className="text-sm">
               <p className="text-slate-600">{n.message}</p>
-              <p className="text-xs text-slate-400">{new Date(n.createdAt).toLocaleString()}</p>
+              <p className="text-xs text-slate-400">{formatDateTime(n.createdAt)}</p>
             </li>
           ))}
         </ul>

@@ -23,8 +23,8 @@ const getUpcoming = catchAsync(async (req, res) => {
 });
 
 const createHoliday = catchAsync(async (req, res) => {
-  const { name, date, type } = req.body;
-  const holiday = await Holiday.create({ name, date, type });
+  const { name, date } = req.body;
+  const holiday = await Holiday.create({ name, date });
   res.status(201).json({ success: true, holiday });
 });
 

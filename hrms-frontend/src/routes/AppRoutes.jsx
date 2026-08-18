@@ -11,7 +11,6 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import MyProfile from "../pages/profile/MyProfile";
 import AttendanceHistory from "../pages/attendance/AttendanceHistory";
 import LeaveManagement from "../pages/leave/LeaveManagement";
-import MyPayslips from "../pages/payroll/MyPayslips";
 import MyAssets from "../pages/assets/MyAssets";
 
 import TeamAttendance from "../pages/manager/TeamAttendance";
@@ -19,7 +18,6 @@ import LeaveApproval from "../pages/manager/LeaveApproval";
 import TeamDirectory from "../pages/manager/TeamDirectory";
 
 import EmployeeDirectory from "../pages/hr/EmployeeDirectory";
-import PayrollProcessing from "../pages/hr/PayrollProcessing";
 import AssetInventory from "../pages/hr/AssetInventory";
 import HolidayCalendarManage from "../pages/hr/HolidayCalendarManage";
 import ReportsCenter from "../pages/hr/ReportsCenter";
@@ -41,7 +39,6 @@ export default function AppRoutes() {
           <Route path="/profile" element={<MyProfile />} />
           <Route path="/attendance" element={<AttendanceHistory />} />
           <Route path="/leave" element={<LeaveManagement />} />
-          <Route path="/payslips" element={<MyPayslips />} />
           <Route path="/my-assets" element={<MyAssets />} />
 
           <Route element={<RoleGuard allow={["manager", "hr", "super_admin"]} />}>
@@ -52,7 +49,6 @@ export default function AppRoutes() {
 
           <Route element={<RoleGuard allow={["hr", "super_admin"]} />}>
             <Route path="/hr/employees" element={<EmployeeDirectory />} />
-            <Route path="/hr/payroll" element={<PayrollProcessing />} />
             <Route path="/hr/assets" element={<AssetInventory />} />
             <Route path="/hr/holidays" element={<HolidayCalendarManage />} />
           </Route>

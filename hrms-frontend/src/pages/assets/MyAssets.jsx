@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Laptop, Monitor, Mouse, Keyboard, Package } from "lucide-react";
 import { getMyAssetsApi } from "../../api/asset.api";
+import { formatDate } from "../../utils/formatters";
 import Card from "../../components/common/Card";
 
 const icons = { laptop: Laptop, monitor: Monitor, mouse: Mouse, keyboard: Keyboard, other: Package };
@@ -17,7 +18,7 @@ export default function MyAssets() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-slate-800">My Assigned Assets</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">My Assigned Assets</h1>
 
       {loading ? (
         <p className="text-sm text-slate-400">Loading...</p>
@@ -37,10 +38,10 @@ export default function MyAssets() {
                   </div>
                   <div>
                     <p className="font-medium capitalize text-slate-700">{a.asset.assetType}</p>
-                    <p className="text-sm text-slate-500">{a.asset.modelName}</p>
-                    <p className="text-xs text-slate-400">S/N: {a.asset.serialNumber}</p>
+                    <p className="text-sm text-slate-500">{a.asset.modelName || a.asset.description || "—"}</p>
+                    {a.asset.serialNumber && <p className="text-xs text-slate-400">S/N: {a.asset.serialNumber}</p>}
                     <p className="mt-1 text-xs text-slate-400">
-                      Assigned {new Date(a.assignedDate).toLocaleDateString()}
+                      Assigned {formatDate(a.assignedDate)}
                     </p>
                   </div>
                 </div>

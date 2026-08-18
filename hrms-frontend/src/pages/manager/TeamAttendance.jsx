@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTeamAttendanceApi } from "../../api/attendance.api";
+import { formatTime } from "../../utils/formatters";
 import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Badge from "../../components/common/Badge";
@@ -25,29 +26,31 @@ export default function TeamAttendance() {
     {
       key: "punchIn",
       label: "Punch In",
-      render: (r) => (r.attendance?.punchIn ? new Date(r.attendance.punchIn).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"),
+      render: (r) => (r.attendance?.punchIn ? formatTime(r.attendance.punchIn) : "—"),
     },
     {
       key: "punchOut",
       label: "Punch Out",
-      render: (r) => (r.attendance?.punchOut ? new Date(r.attendance.punchOut).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—"),
+      render: (r) => (r.attendance?.punchOut ? formatTime(r.attendance.punchOut) : "—"),
     },
     {
       key: "status",
       label: "Status",
-      render: (r) =>
-        r.attendance ? (
-          <Badge tone={statusTone[r.attendance.status] || "slate"}>{r.attendance.status.replace("_", " ")}</Badge>
-        ) : (
-          <Badge tone="red">absent</Badge>
-        ),
+      render: (r) => {
+        if (r.attendance) {
+          return <Badge tone={statusTone[r.attendance.status] || "slate"}>{r.attendance.status.replace("_", " ")}</Badge>;
+        }
+        const dayNoteLabels = { holiday: "Holiday", weekend: "Weekend", on_leave: "On Leave", not_joined: "—" };
+        if (r.dayNote) return <Badge tone="slate">{dayNoteLabels[r.dayNote]}</Badge>;
+        return <Badge tone="red">absent</Badge>;
+      },
     },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold text-slate-800">Team Attendance</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Team Attendance</h1>
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
       </div>
 

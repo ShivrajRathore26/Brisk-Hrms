@@ -11,10 +11,10 @@ const updateSettings = catchAsync(async (req, res) => {
   let settings = await CompanySettings.findOne();
   if (!settings) settings = new CompanySettings();
 
-  const { leavePolicy, taxRules, workingHours } = req.body;
+  const { leavePolicy, workingHours, officeLocation } = req.body;
   if (leavePolicy) settings.leavePolicy = { ...settings.leavePolicy.toObject(), ...leavePolicy };
-  if (taxRules) settings.taxRules = { ...settings.taxRules.toObject(), ...taxRules };
   if (workingHours) settings.workingHours = { ...settings.workingHours.toObject(), ...workingHours };
+  if (officeLocation) settings.officeLocation = { ...settings.officeLocation.toObject(), ...officeLocation };
 
   await settings.save();
   res.json({ success: true, settings });

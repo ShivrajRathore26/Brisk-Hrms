@@ -54,5 +54,5 @@ Runs on `http://localhost:5173`, pointed at the API via `VITE_API_URL` in `hrms-
 
 1. Log in as `employee@hrms.test` → punch in/out on the dashboard, apply for leave.
 2. Log in as `manager@hrms.test` → approve the leave request, view team attendance.
-3. Log in as `hr@hrms.test` → add an employee, set their salary structure, run payroll, assign an asset.
+3. Log in as `hr@hrms.test` → add an employee, assign an asset, click an employee row to see their full detail view.
 4. Log in as `super_admin@hrms.test` → manage departments, reassign a role, edit company settings.

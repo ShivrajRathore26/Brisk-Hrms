@@ -2,13 +2,11 @@ const mongoose = require("mongoose");
 
 const assetSchema = new mongoose.Schema(
   {
-    assetType: {
-      type: String,
-      enum: ["laptop", "monitor", "mouse", "keyboard", "other"],
-      required: true,
-    },
-    modelName: { type: String, required: true },
-    serialNumber: { type: String, required: true, unique: true },
+    // Free-form so HR can introduce new device types beyond the common presets suggested in the UI.
+    assetType: { type: String, required: true, trim: true, lowercase: true },
+    modelName: { type: String, default: "" },
+    serialNumber: { type: String, unique: true, sparse: true },
+    description: { type: String, default: "" },
     status: {
       type: String,
       enum: ["available", "assigned", "under_repair", "damaged", "retired"],

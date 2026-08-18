@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, CheckCircle2, Lock } from "lucide-react";
 import { resetPasswordApi } from "../../api/auth.api";
+import AuthLayout from "../../components/layout/AuthLayout";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 
@@ -33,45 +35,69 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm rounded-card bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-xl font-semibold text-slate-800">Set a new password</h1>
+    <AuthLayout>
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex justify-center">
+          <img src="/logo.png" alt="Briskcovey Technologies" className="h-9 w-auto sm:h-10" />
+        </div>
 
         {done ? (
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
-            Password reset! Redirecting to sign in...
-          </p>
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
+              <CheckCircle2 size={24} className="text-emerald-600" />
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Password reset</h1>
+            <p className="mt-2 text-sm text-slate-500">Redirecting you to sign in...</p>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="New password"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Input
-              label="Confirm password"
-              type="password"
-              required
-              minLength={6}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Resetting..." : "Reset password"}
-            </Button>
-          </form>
+          <>
+            <div className="mb-8">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Set a new password</h1>
+              <p className="mt-1.5 text-sm text-slate-500">Choose a strong password you haven't used before.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="New password"
+                type="password"
+                icon={Lock}
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+              <Input
+                label="Confirm password"
+                type="password"
+                icon={Lock}
+                required
+                minLength={6}
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder="••••••••"
+              />
+              {error && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? "Resetting..." : "Reset password"}
+              </Button>
+            </form>
+          </>
         )}
 
-        <div className="mt-5 text-center">
-          <Link to="/login" className="text-sm text-accent-600 hover:underline">
-            Back to sign in
+        <div className="mt-6 text-center">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-700"
+          >
+            <ArrowLeft size={14} /> Back to sign in
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

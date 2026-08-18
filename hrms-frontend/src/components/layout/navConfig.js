@@ -3,7 +3,6 @@ import {
   User,
   CalendarCheck,
   CalendarDays,
-  Wallet,
   Laptop,
   Users,
   ClipboardCheck,
@@ -28,7 +27,6 @@ export const navSections = [
     items: [
       { to: "/attendance", label: "Attendance History", icon: CalendarCheck, roles: ["super_admin", "hr", "manager", "employee"] },
       { to: "/leave", label: "Leave", icon: CalendarDays, roles: ["super_admin", "hr", "manager", "employee"] },
-      { to: "/payslips", label: "My Payslips", icon: Wallet, roles: ["super_admin", "hr", "manager", "employee"] },
       { to: "/my-assets", label: "My Assets", icon: Laptop, roles: ["super_admin", "hr", "manager", "employee"] },
     ],
   },
@@ -44,7 +42,6 @@ export const navSections = [
     title: "HR",
     items: [
       { to: "/hr/employees", label: "Employee Directory", icon: Users, roles: ["hr", "super_admin"] },
-      { to: "/hr/payroll", label: "Payroll Processing", icon: Wallet, roles: ["hr", "super_admin"] },
       { to: "/hr/assets", label: "Asset Inventory", icon: Boxes, roles: ["hr", "super_admin"] },
       { to: "/hr/holidays", label: "Holiday Calendar", icon: CalendarDays, roles: ["hr", "super_admin"] },
       { to: "/hr/reports", label: "Reports Center", icon: FileBarChart, roles: ["hr", "super_admin", "manager"] },

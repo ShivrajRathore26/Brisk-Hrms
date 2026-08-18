@@ -2,7 +2,6 @@ require("dotenv").config();
 const connectDB = require("../config/db");
 const User = require("../models/User");
 const Department = require("../models/Department");
-const LeaveBalance = require("../models/LeaveBalance");
 const CompanySettings = require("../models/CompanySettings");
 const Holiday = require("../models/Holiday");
 
@@ -21,17 +20,6 @@ async function upsertUser({ name, email, role, department, designation, manager 
       manager: manager || null,
       status: "active",
     });
-
-    const year = new Date().getFullYear();
-    await LeaveBalance.insertMany(
-      ["sick", "casual", "earned"].map((leaveType) => ({
-        user: user._id,
-        leaveType,
-        total: { sick: 12, casual: 12, earned: 15 }[leaveType],
-        used: 0,
-        year,
-      }))
-    );
     console.log(`Created ${role}: ${email}`);
   } else {
     console.log(`Already exists (${role}): ${email}`);

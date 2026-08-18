@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Pencil, Check, X } from "lucide-react";
 import {
   getDepartmentsApi,
   createDepartmentApi,
@@ -9,7 +9,9 @@ import {
 import Card from "../../components/common/Card";
 import Table from "../../components/common/Table";
 import Button from "../../components/common/Button";
+import Modal from "../../components/common/Modal";
 import Input from "../../components/common/Input";
+import IconButton from "../../components/common/IconButton";
 
 export default function DepartmentManagement() {
   const [departments, setDepartments] = useState([]);
@@ -17,6 +19,9 @@ export default function DepartmentManagement() {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [error, setError] = useState("");
+
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
 
   const load = () => {
     getDepartmentsApi().then((data) => setDepartments(data.departments));
@@ -44,9 +49,15 @@ export default function DepartmentManagement() {
     load();
   };
 
-  const handleDelete = async (id) => {
-    await deleteDepartmentApi(id);
-    load();
+  const handleDelete = async () => {
+    setDeleteError("");
+    try {
+      await deleteDepartmentApi(deleteTarget._id);
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      setDeleteError(err.response?.data?.message || "Failed to delete department");
+    }
   };
 
   const columns = [
@@ -59,14 +70,11 @@ export default function DepartmentManagement() {
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
+              autoFocus
               className="rounded-lg border border-slate-200 px-2 py-1 text-sm outline-none focus:border-accent-500"
             />
-            <button onClick={() => handleUpdate(r._id)} className="text-xs text-accent-600 hover:underline">
-              Save
-            </button>
-            <button onClick={() => setEditingId(null)} className="text-xs text-slate-400 hover:underline">
-              Cancel
-            </button>
+            <IconButton icon={Check} label="Save" tone="green" onClick={() => handleUpdate(r._id)} />
+            <IconButton icon={X} label="Cancel" onClick={() => setEditingId(null)} />
           </div>
         ) : (
           <button
@@ -74,9 +82,10 @@ export default function DepartmentManagement() {
               setEditingId(r._id);
               setEditName(r.name);
             }}
-            className="text-slate-700 hover:text-accent-600"
+            className="group flex items-center gap-2 text-slate-700 hover:text-accent-600"
           >
             {r.name}
+            <Pencil size={13} className="text-slate-300 group-hover:text-accent-500" />
           </button>
         ),
     },
@@ -84,16 +93,22 @@ export default function DepartmentManagement() {
       key: "actions",
       label: "",
       render: (r) => (
-        <button onClick={() => handleDelete(r._id)} className="text-slate-400 hover:text-red-500">
-          <Trash2 size={16} />
-        </button>
+        <IconButton
+          icon={Trash2}
+          label="Delete department"
+          tone="red"
+          onClick={() => {
+            setDeleteError("");
+            setDeleteTarget(r);
+          }}
+        />
       ),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-slate-800">Department Management</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Department Management</h1>
 
       <Card title="Add Department">
         <form onSubmit={handleAdd} className="flex items-end gap-3">
@@ -114,6 +129,24 @@ export default function DepartmentManagement() {
       <Card title="Departments">
         <Table columns={columns} rows={departments} />
       </Card>
+
+      <Modal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Delete Department"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDelete}>Delete</Button>
+          </>
+        }
+      >
+        <p className="text-sm text-slate-600">
+          Are you sure you want to delete{" "}
+          <span className="font-medium text-slate-800">{deleteTarget?.name}</span>? This action cannot be undone.
+        </p>
+        {deleteError && <p className="mt-2 text-sm text-red-500">{deleteError}</p>}
+      </Modal>
     </div>
   );
 }
