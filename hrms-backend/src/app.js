@@ -17,7 +17,35 @@ const settingsRoutes = require("./routes/settings.routes");
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+// app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+const allowedProductionOrigin = process.env.CLIENT_URL;
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without Origin
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Allow production frontend
+      if (origin === allowedProductionOrigin) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel preview deployments
+      if (
+        origin.startsWith("https://brisk-hrms-o3zy-") &&
+        origin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
